@@ -14,7 +14,7 @@ class LessActiveRecord
 
     def dump
       File.open(file_name, 'w') do |file|
-         YAML.dump(@items, file)
+        YAML.dump(@items, file)
       end
     end
 
@@ -34,8 +34,6 @@ class LessActiveRecord
     def all
       @items.map { |item| item.copy }
     end
-
-    private
 
     def file_name
       "#{ self.to_s.downcase }_table.yml"
