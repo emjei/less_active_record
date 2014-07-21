@@ -26,22 +26,20 @@ class LessActiveRecord
     end
 
     def attribute(name)
-      symbolized_name = name.to_sym
-      unless attribute_names.include? symbolized_name
-        attr_accessor name.to_s
-
-        attribute_names = (self.attribute_names << symbolized_name)
-        self.attribute_names = attribute_names
+      tap do
+        symbolized_name = name.to_sym
+        unless attribute_names.include? symbolized_name
+          attr_accessor symbolized_name
+          self.attribute_names <<= symbolized_name
+        end
       end
-
-      nil
     end
 
     def attribute_names
       (@attribute_names ||= []).clone
     end
 
-    private
+    protected
 
     attr_writer :attribute_names
 
@@ -62,9 +60,9 @@ class LessActiveRecord
     # end
   end
 
-  # def initialize(attributes = {})
-  #   self.attributes = attributes
-  # end
+  def initialize(attributes = {})
+    self.attributes = attributes
+  end
 
   # def save
   #   if valid?
@@ -95,18 +93,17 @@ class LessActiveRecord
   #   true
   # end
 
-  # def attributes
-  #   attribute_names.each_with_object({}) do |name, attributes|
-  #     attributes[name] = send(name)
-  #   end
-  # end
+  def attributes
+    self.class.attribute_names.each_with_object({}) do |name, attributes|
+      attributes[name] = send(name)
+    end
+  end
 
-  # def attributes=(attributes)
-  #   self.attributes.each_key do |key|
-  #     # TODO: should key.fetch
-  #     send("#{ key }=", attributes[key]) unless attributes[key].nil?
-  #   end
-  # end
+  def attributes=(attributes)
+    self.class.attribute_names.each do |name|
+      send("#{ name }=", attributes[name]) if attributes.key?(name)
+    end
+  end
 
   # def persisted?
   #   raise NotImplementedError

@@ -33,15 +33,17 @@ describe LessActiveRecord do
       expect(klass.attribute_names).to match_array %i(new_attribute)
     end
 
-    it 'returns nil' do
-      expect(klass.attribute(:any)).to be_nil
+    it 'returns self' do
+      expect(klass.attribute(:any)).to eq klass
     end
   end
 
   describe '::attribute_names' do
     it 'returns a copy of the attribute names array' do
       klass = Class.new(LessActiveRecord)
-      expect(klass.attribute_names << 'attr').not_to eq klass.attribute_names
+      expect {
+        klass.attribute_names << 'anything'
+      }.not_to change { klass.attribute_names }
     end
 
     context 'when attributes are present' do
@@ -56,12 +58,63 @@ describe LessActiveRecord do
       end
     end
 
-    context 'when attribute names are not present' do
+    context 'when attributes are not present' do
       let(:klass) { Class.new(LessActiveRecord) }
 
       it 'returns an empty array' do
         expect(klass.attribute_names).to be_empty
       end
+    end
+  end
+
+  describe '::new' do
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr
+      end
+    end
+
+    it 'sets the specified attributes' do
+      expect_any_instance_of(klass).to receive(:attributes=)
+      klass.new(attr: 'value')
+    end
+  end
+
+  describe '#attributes=' do
+    let(:instance) { klass.new(attr_2: 'value') }
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr_1
+        attribute :attr_2
+      end
+    end
+
+    it 'sets the specified attributes' do
+      expect {
+        instance.attributes = { attr_1: 'value', attr_2: nil }
+      }.to change { instance.attributes }
+       .from(attr_1: nil, attr_2: 'value')
+       .to(attr_1: 'value', attr_2: nil)
+    end
+
+    it 'does not set the unspecified ones' do
+      expect {
+        instance.attributes = { attr_1: 'other_value' }
+      }.not_to change { instance.attr_2 }
+    end
+  end
+
+  describe '#attributes' do
+    let(:instance) { klass.new(attr_2: 'value') }
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr_1
+        attribute :attr_2
+      end
+    end
+
+    it 'returns the attributes hash' do
+      expect(instance.attributes).to eq(attr_1: nil, attr_2: 'value')
     end
   end
 
