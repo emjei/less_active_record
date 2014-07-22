@@ -4,10 +4,7 @@ class User < LessActiveRecord
   attribute :first_name
   attribute :last_name
 
-  # OBLIGATORY method for all the LessActiveRecord classes
-  def valid?
-    name_is_long_enough?
-  end
+  validate :name_is_long_enough?
 
   # One of the object's usual methods
   def full_name
@@ -16,7 +13,7 @@ class User < LessActiveRecord
 
   private
 
-  # One of the validations
+  # One of the validations - usually private
   def name_is_long_enough?
     full_name.length > 8
   end

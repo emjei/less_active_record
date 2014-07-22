@@ -26,22 +26,36 @@ class LessActiveRecord
     end
 
     def attribute(name)
-      tap do
-        symbolized_name = name.to_sym
-        unless attribute_names.include? symbolized_name
-          attr_accessor symbolized_name
-          self.attribute_names <<= symbolized_name
-        end
+      symbolized_name = name.to_sym
+      unless attribute_names.include? symbolized_name
+        attr_accessor symbolized_name
+        self.attribute_names <<= symbolized_name
       end
+
+      self
     end
 
     def attribute_names
       (@attribute_names ||= []).clone
     end
 
+    def validate(method_name)
+      symbolized_name = method_name.to_sym
+      unless validations.include? symbolized_name
+        self.validations <<= symbolized_name
+      end
+
+      self
+    end
+
+    def validations
+      (@validations ||= []).clone
+    end
+
     protected
 
     attr_writer :attribute_names
+    attr_writer :validations
 
     # attr_writer :items
 
@@ -103,6 +117,16 @@ class LessActiveRecord
     self.class.attribute_names.each do |name|
       send("#{ name }=", attributes[name]) if attributes.key?(name)
     end
+  end
+
+  def valid?
+    self.class.validations.each do |validation|
+      return false if send(validation) == false
+    end
+
+    true
+  rescue
+    false
   end
 
   # def persisted?

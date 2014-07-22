@@ -67,6 +67,52 @@ describe LessActiveRecord do
     end
   end
 
+  describe '#validate' do
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        validate :validation
+        validate 'validation'
+      end
+    end
+
+    it 'adds a new attribute without duplicates' do
+      expect(klass.validations).to match_array %i(validation)
+    end
+
+    it 'returns self' do
+      expect(klass.validate(:any)).to eq klass
+    end
+  end
+
+  describe '::validations' do
+    it 'returns a copy of the validation names array' do
+      klass = Class.new(LessActiveRecord)
+      expect {
+        klass.validations << 'anything'
+      }.not_to change { klass.validations }
+    end
+
+    context 'when validations are present' do
+      let(:klass) do
+        Class.new(LessActiveRecord) do
+          validate :validation
+        end
+      end
+
+      it 'returns the attribute names' do
+        expect(klass.validations).to match_array %i(validation)
+      end
+    end
+
+    context 'when validations are not present' do
+      let(:klass) { Class.new(LessActiveRecord) }
+
+      it 'returns an empty array' do
+        expect(klass.validations).to be_empty
+      end
+    end
+  end
+
   describe '::new' do
     let(:klass) do
       Class.new(LessActiveRecord) do
@@ -115,6 +161,50 @@ describe LessActiveRecord do
 
     it 'returns the attributes hash' do
       expect(instance.attributes).to eq(attr_1: nil, attr_2: 'value')
+    end
+  end
+
+  describe '#valid?' do
+    let(:instance) { klass.new }
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        validate :validation
+      end
+    end
+
+    it 'runs all specified validations' do
+      expect(instance).to receive(:validation).once.with no_args()
+      instance.valid?
+    end
+
+    context 'when one of the validations return false' do
+      before do
+        allow(instance).to receive(:validation).and_return false
+      end
+
+      it 'returns false' do
+        expect(instance.valid?).to be_falsy
+      end
+    end
+
+    context 'when one of the validations throw an exception' do
+      before do
+        allow(instance).to receive(:validation) { raise 'Error!' }
+      end
+
+      it 'returns false' do
+        expect(instance.valid?).to be_falsy
+      end
+    end
+
+    context 'when all of the validations pass' do
+      before do
+        allow(instance).to receive(:validation).and_return true
+      end
+
+      it 'returns true' do
+        expect(instance.valid?).to be_truthy
+      end
     end
   end
 
