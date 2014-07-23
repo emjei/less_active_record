@@ -208,6 +208,38 @@ describe LessActiveRecord do
     end
   end
 
+  describe '#save' do
+    let(:instance) { klass.new }
+    let(:klass) { Class.new(LessActiveRecord) }
+
+    context 'when an object is valid' do
+      before do
+        allow(instance).to receive(:valid?).and_return true
+      end
+
+      it 'returns true' do
+        expect(instance.save).to be_truthy
+      end
+
+      # TODO: move to a database adapter class
+      it 'persists the record if the object is a new record'
+      it 'updates the record if the object is persisted'
+      it 'persists the changes only after calling save'
+      it 'dumps the content to a yaml file'
+      it 'assigns an id'
+    end
+
+    context 'when an object is invalid' do
+      before do
+        allow(instance).to receive(:valid?).and_return false
+      end
+
+      it 'returns false' do
+        expect(instance.save).to be_falsy
+      end
+    end
+  end
+
   # describe '::load' do
   #   context 'when the content file exists' do
   #     before do

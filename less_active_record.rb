@@ -78,23 +78,23 @@ class LessActiveRecord
     self.attributes = attributes
   end
 
-  # def save
-  #   if valid?
-  #     items = self.class.items
-  #     if id.nil?
-  #       id = (items.map(&:id).max || 0) + 1
-  #       items << copy
-  #     else
-  #       item = items.detect { |item| item.id == id }
-  #       item.attributes = attributes
-  #     end
+  def save
+    if valid?
+      # items = self.class.items
+      # if id.nil?
+      #   id = (items.map(&:id).max || 0) + 1
+      #   items << copy
+      # else
+      #   item = items.detect { |item| item.id == id }
+      #   item.attributes = attributes
+      # end
 
-  #     self.class.dump
-  #     true
-  #   else
-  #     false
-  #   end
-  # end
+      # self.class.dump
+      true
+    else
+      false
+    end
+  end
 
   # def update(attributes = {})
   #   self.attributes = attributes
