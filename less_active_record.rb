@@ -1,28 +1,28 @@
-require 'yaml'
+require_relative 'yaml_adapter'
 
 class LessActiveRecord
-  # attr_reader :id
+  attr_reader :id
 
   class << self
-    # def create(attributes = {})
-    #   new(attributes).tap(&:save)
-    # end
+    def create(attributes = {})
+      new(attributes).tap(&:save)
+    end
 
     # def all
-    #   items.map(&:copy)
+    #   items.map(&:clone)
     # end
 
     # def find(id)
     #   item = items.detect { |item| item.id == id }
-    #   item.nil? ? (raise 'Record not found!') : item.copy
+    #   item.nil? ? (raise 'Record not found!') : item.clone
     # end
 
     # def where(attributes)
     #   raise NotImplementedError
     # end
 
-    def file_name
-      "#{ self.to_s.downcase }_table.yml"
+    def storage_name
+      "#{ self.to_s.downcase }_table"
     end
 
     def attribute(name)
@@ -57,21 +57,9 @@ class LessActiveRecord
     attr_writer :attribute_names
     attr_writer :validations
 
-    # attr_writer :items
-
-    # def items
-    #   @items ||= self.load || []
-    # end
-
-    # def load
-    #   YAML.load_file(file_name) if File.exists?(file_name)
-    # end
-
-    # def dump
-    #   File.open(file_name, 'w') do |file|
-    #     YAML.dump(items, file)
-    #   end
-    # end
+    def _adapter
+      @_adapter ||= YAMLAdapter.new(file_name)
+    end
   end
 
   def initialize(attributes = {})
@@ -79,27 +67,21 @@ class LessActiveRecord
   end
 
   def save
-    if valid?
-      # items = self.class.items
-      # if id.nil?
-      #   id = (items.map(&:id).max || 0) + 1
-      #   items << copy
-      # else
-      #   item = items.detect { |item| item.id == id }
-      #   item.attributes = attributes
-      # end
+    return false unless valid?
 
-      # self.class.dump
+    if new_record?
+      self.id = _adapter.create(attributes)
+
       true
     else
-      false
+      _adapter.update(id, attributes)
     end
   end
 
-  # def update(attributes = {})
-  #   self.attributes = attributes
-  #   save
-  # end
+  def update(attributes = {})
+    self.attributes = attributes
+    save
+  end
 
   # def destroy
   #   items = self.class.instance_variable_get(:@items)
@@ -121,7 +103,7 @@ class LessActiveRecord
 
   def valid?
     self.class.validations.each do |validation|
-      return false if send(validation) == false
+      return false unless send(validation)
     end
 
     true
@@ -129,20 +111,19 @@ class LessActiveRecord
     false
   end
 
-  # def persisted?
-  #   raise NotImplementedError
-  # end
+  def persisted?
+    not new_record?
+  end
 
-  # def new_record?
-  #   raise NotImplementedError
-  # end
+  def new_record?
+    id.blank?
+  end
 
-  # # TODO rename to clone
-  # def copy
-  #   self.class.new(attributes).tap { |copy| copy.id = id }
-  # end
+  def clone
+    self.class.new(attributes).tap { |clone| clone.id = id }
+  end
 
-  # private
+  protected
 
-  # attr_writer :id
+  attr_writer :id
 end
