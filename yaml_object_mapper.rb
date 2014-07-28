@@ -2,7 +2,7 @@ class YAMLObjectMapper
   attr_reader :file_name
 
   def initialize(file_name)
-    self.file_name = file_name
+    @file_name = file_name
   end
 
   def load_file
@@ -14,8 +14,4 @@ class YAMLObjectMapper
       YAML.dump(object, file)
     end
   end
-
-  private
-
-  attr_writer :file_name
 end
