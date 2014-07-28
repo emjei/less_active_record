@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe YAMLObjectMapper do
-  let(:mapper) { YAMLObjectMapper.new('file.yml') }
+  let(:mapper) { YAMLObjectMapper.new('File.yml') }
 
   describe '#load_file' do
     context 'when the content file exists' do
@@ -11,7 +11,7 @@ describe YAMLObjectMapper do
 
       it 'loads the file contents' do
         expect(YAML).to receive(:load_file)
-          .with('file.yml').and_return('content')
+          .with('File.yml').and_return('content')
         expect(mapper.load_file).to eq 'content'
       end
     end
@@ -31,7 +31,7 @@ describe YAMLObjectMapper do
     let(:object) { double('some object') }
 
     it 'opens a file for writing' do
-      expect(File).to receive(:open).with('file.yml', 'w')
+      expect(File).to receive(:open).with('File.yml', 'w')
       mapper.dump_file(object)
     end
 

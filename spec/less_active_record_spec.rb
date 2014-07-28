@@ -9,7 +9,7 @@ describe LessActiveRecord do
     end
 
     it 'names the content file after the class' do
-      expect(klass.storage_name).to be == 'klass_table'
+      expect(klass.storage_name).to be == 'KlassTable'
     end
   end
 

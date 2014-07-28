@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe YAMLAdapter do
-  let(:adapter) { YAMLAdapter.new('file') }
+  let(:adapter) { YAMLAdapter.new('File') }
 
   before do
     allow(adapter).to receive(:dump_all_items!)
@@ -114,7 +114,7 @@ describe YAMLAdapter do
 
   describe '#file_name' do
     it 'returns the content file name' do
-      expect(adapter.file_name).to eq 'file.yml'
+      expect(adapter.file_name).to eq 'File.yml'
     end
   end
 end

@@ -22,7 +22,7 @@ class LessActiveRecord
     # end
 
     def storage_name
-      "#{ self.to_s.downcase }_table"
+      "#{ self.to_s }Table"
     end
 
     def attribute(name)
@@ -58,7 +58,7 @@ class LessActiveRecord
     attr_writer :validations
 
     def _adapter
-      @_adapter ||= YAMLAdapter.new(file_name)
+      @_adapter ||= YAMLAdapter.new(storage_name)
     end
   end
 
