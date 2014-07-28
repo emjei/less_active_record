@@ -4,8 +4,8 @@ class YAMLAdapter
   attr_reader :file_name
 
   def initialize(storage_name)
-    self.file_name = "#{ storage_name }.yml"
-    self._mapper = YAMLObjectMapper.new(file_name)
+    @file_name = "#{ storage_name }.yml"
+    @_mapper = YAMLObjectMapper.new(file_name)
   end
 
   def update(id, attributes)
@@ -46,9 +46,7 @@ class YAMLAdapter
 
   private
 
-  attr_writer :file_name
-  attr_writer :_items
-  attr_accessor :_mapper
+  attr_reader :_mapper
 
   def _items
     @_items ||= load_all_items || []

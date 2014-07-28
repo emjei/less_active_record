@@ -70,7 +70,7 @@ class LessActiveRecord
     return false unless valid?
 
     if new_record?
-      self.id = _adapter.create(attributes)
+      @id = _adapter.create(attributes)
 
       true
     else
