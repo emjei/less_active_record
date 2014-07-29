@@ -208,30 +208,91 @@ describe LessActiveRecord do
     end
   end
 
-  describe '#save' do
-    let(:instance) { klass.new }
-    let(:klass) { Class.new(LessActiveRecord) }
+  describe '#new_record?' do
+    context 'when it is persisted' do
+      let(:instance) { Class.new(LessActiveRecord).create }
 
-    context 'when an object is valid' do
-      before do
-        allow(instance).to receive(:valid?).and_return true
+      it 'returns false' do
+        expect(instance).not_to be_new_record
       end
+    end
+
+    context 'when it is not persisted' do
+      let(:instance) { Class.new(LessActiveRecord).new }
 
       it 'returns true' do
+        expect(instance).to be_new_record
+      end
+    end
+  end
+
+  describe '#persisted?' do
+    context 'when it is persisted' do
+      let(:instance) { Class.new(LessActiveRecord).create }
+
+      it 'returns true' do
+        expect(instance).to be_persisted
+      end
+    end
+
+    context 'when it is not persisted' do
+      let(:instance) { Class.new(LessActiveRecord).new }
+
+      it 'returns false' do
+        expect(instance).not_to be_persisted
+      end
+    end
+  end
+
+  describe '#save' do
+    context 'when an object is valid' do
+      let(:klass) do
+        Class.new(LessActiveRecord) do
+          attribute :attr
+        end
+      end
+
+      it 'returns true if the object is a new record' do
+        instance = klass.new
         expect(instance.save).to be_truthy
       end
 
-      # TODO: move to a database adapter class
-      it 'persists the record if the object is a new record'
-      it 'updates the record if the object is persisted'
-      it 'persists the changes only after calling save'
-      it 'dumps the content to a yaml file'
-      it 'assigns an id'
+      it 'persists the object if the object is a new record' do
+        instance = klass.new
+        expect { instance.save }.to change(instance, :persisted?).to true
+      end
+
+      it 'assigns an id if the object is a new record' do
+        instance = klass.new
+        expect { instance.save }.to change { instance.id.nil? }.to false
+      end
+
+      it 'updates the data if the object is already persisted' do
+        instance = klass.create(attr: '1')
+        expect {
+          instance.attr = '2'
+          instance.save
+        }.to change { klass.find(instance.id).attr }.from('1').to '2'
+      end
+
+      it 'returns true if the object is already persisted' do
+        instance = klass.create(attr: '1')
+        expect(instance.save).to be_truthy
+      end
     end
 
     context 'when an object is invalid' do
-      before do
-        allow(instance).to receive(:valid?).and_return false
+      let(:instance) { klass.new }
+      let(:klass) do
+        Class.new(LessActiveRecord) do
+          validate :validation
+
+          private
+
+          def validation
+            false
+          end
+        end
       end
 
       it 'returns false' do

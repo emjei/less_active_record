@@ -1,7 +1,6 @@
 require_relative 'yaml_adapter'
 
 class LessActiveRecord
-  # TODO: test
   attr_reader :id
 
   class << self
@@ -11,13 +10,15 @@ class LessActiveRecord
     end
 
     # def all
-    #   items.map(&:clone)
+    #   _adapter.search
     # end
 
-    # def find(id)
-    #   item = items.detect { |item| item.id == id }
-    #   item.nil? ? (raise 'Record not found!') : item.clone
-    # end
+    # TODO: test
+    def find(id)
+      new(_adapter.search(id: id).first).tap do |item|
+        item.send(:id=, id)
+      end
+    end
 
     # def where(attributes)
     #   raise NotImplementedError
@@ -68,12 +69,11 @@ class LessActiveRecord
     self.attributes = attributes
   end
 
-  # TODO: test
   def save
     return false unless valid?
 
     if new_record?
-      @id = _adapter.create(attributes)
+      @id = _adapter.insert(attributes)
 
       true
     else
@@ -115,17 +115,14 @@ class LessActiveRecord
     false
   end
 
-  # TODO: test
   def persisted?
     not new_record?
   end
 
-  # TODO: test
   def new_record?
-    id.blank?
+    id.nil?
   end
 
-  # TODO: test
   def clone
     self.class.new(attributes).tap { |clone| clone.id = id }
   end
@@ -133,4 +130,8 @@ class LessActiveRecord
   protected
 
   attr_writer :id
+
+  def _adapter
+    self.class.send(:_adapter)
+  end
 end
