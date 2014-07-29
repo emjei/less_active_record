@@ -1,9 +1,11 @@
 require_relative 'yaml_adapter'
 
 class LessActiveRecord
+  # TODO: test
   attr_reader :id
 
   class << self
+    # TODO: test
     def create(attributes = {})
       new(attributes).tap(&:save)
     end
@@ -66,6 +68,7 @@ class LessActiveRecord
     self.attributes = attributes
   end
 
+  # TODO: test
   def save
     return false unless valid?
 
@@ -78,6 +81,7 @@ class LessActiveRecord
     end
   end
 
+  # TODO: test
   def update(attributes = {})
     self.attributes = attributes
     save
@@ -111,14 +115,17 @@ class LessActiveRecord
     false
   end
 
+  # TODO: test
   def persisted?
     not new_record?
   end
 
+  # TODO: test
   def new_record?
     id.blank?
   end
 
+  # TODO: test
   def clone
     self.class.new(attributes).tap { |clone| clone.id = id }
   end
