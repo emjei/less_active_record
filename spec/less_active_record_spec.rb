@@ -244,6 +244,55 @@ describe LessActiveRecord do
     end
   end
 
+  describe '#update' do
+    let(:instance) { klass.create(attr: '1') }
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr
+      end
+    end
+
+    it 'sets the attributes' do
+      expect {
+        instance.update(attr: '2')
+      }.to change(instance, :attr).from('1').to '2'
+    end
+
+    it 'saves the changes' do
+      expect(instance).to receive(:save)
+      instance.update(attr: '2')
+    end
+  end
+
+  describe '#create' do
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr
+      end
+    end
+
+    it 'sets the attributes' do
+      instance = klass.create(attr: '1')
+      expect(instance.attr).to eq '1'
+    end
+
+    it 'persists the object' do
+      instance = klass.create
+      expect(instance).to be_persisted
+    end
+  end
+
+  describe '#destroy' do
+    let(:instance) { klass.create(attr: '1') }
+    let(:klass) do
+      Class.new(LessActiveRecord) do
+        attribute :attr
+      end
+    end
+
+    # TODO: test
+  end
+
   describe '#save' do
     context 'when an object is valid' do
       let(:klass) do

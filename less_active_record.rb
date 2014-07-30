@@ -4,7 +4,6 @@ class LessActiveRecord
   attr_reader :id
 
   class << self
-    # TODO: test
     def create(attributes = {})
       new(attributes).tap(&:save)
     end
@@ -81,17 +80,15 @@ class LessActiveRecord
     end
   end
 
-  # TODO: test
   def update(attributes = {})
     self.attributes = attributes
     save
   end
 
-  # def destroy
-  #   items = self.class.instance_variable_get(:@items)
-  #   items.delete_if { |item| item.id == id }
-  #   true
-  # end
+  # TODO: test
+  def destroy
+    _adapter.destroy(id)
+  end
 
   def attributes
     self.class.attribute_names.each_with_object({}) do |name, attributes|
