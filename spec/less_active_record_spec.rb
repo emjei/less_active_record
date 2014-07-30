@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe LessActiveRecord do
+  after do
+    File.delete(*Dir['*Table.yml'])
+  end
+
   describe '::storage_name' do
     let(:klass) { Class.new(LessActiveRecord) }
 
@@ -283,14 +287,27 @@ describe LessActiveRecord do
   end
 
   describe '#destroy' do
-    let(:instance) { klass.create(attr: '1') }
     let(:klass) do
       Class.new(LessActiveRecord) do
         attribute :attr
       end
     end
 
-    # TODO: test
+    context 'when the object is persisted' do
+      let!(:instance) { klass.create }
+
+      it 'destroys the object' do
+        expect { instance.destroy }.to change { klass.all.size }.by(-1)
+      end
+    end
+
+    context 'when the object is a new record' do
+      let!(:instance) { klass.new }
+
+      it 'does not change anything' do
+        expect { instance.destroy }.not_to change { klass.all.size }
+      end
+    end
   end
 
   describe '#save' do

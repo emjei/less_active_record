@@ -1,27 +1,15 @@
 require_relative 'yaml_adapter'
+require_relative 'record_finders'
 
 class LessActiveRecord
+  extend RecordFinders
+
   attr_reader :id
 
   class << self
     def create(attributes = {})
       new(attributes).tap(&:save)
     end
-
-    # def all
-    #   _adapter.search
-    # end
-
-    # TODO: test
-    def find(id)
-      new(_adapter.search(id: id).first).tap do |item|
-        item.send(:id=, id)
-      end
-    end
-
-    # def where(attributes)
-    #   raise NotImplementedError
-    # end
 
     def storage_name
       "#{ self.to_s }Table"
@@ -85,7 +73,6 @@ class LessActiveRecord
     save
   end
 
-  # TODO: test
   def destroy
     _adapter.destroy(id)
   end
