@@ -20,6 +20,6 @@ Gem::Specification.new do |s|
                      lib/less_active_record/yaml_object_mapper.rb)
 
   # Tests
-  s.add_development_dependency 'rspec', '~> 3.0.0'
-  s.add_development_dependency 'rake', '~> 10.3.2'
+  s.add_development_dependency 'rspec', '~> 3.0'
+  s.add_development_dependency 'rake', '~> 10.3', '>= 10.3.2'
 end
