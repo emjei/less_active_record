@@ -1,4 +1,4 @@
-require_relative 'yaml_object_mapper'
+require 'less_active_record/yaml_object_mapper'
 
 class YAMLAdapter
   attr_reader :file_name
