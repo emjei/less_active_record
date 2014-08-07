@@ -1,3 +1,5 @@
+require 'yaml'
+
 class YAMLObjectMapper
   attr_reader :file_name
 
