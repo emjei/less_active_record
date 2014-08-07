@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.date        = '2014-07-31'
   s.summary     = 'Simplified active record implementation.'
   s.license     = 'AFL-3.0'
-  s.homepage    = 'https://bitbucket.org/emjei/less_active_record'
+  s.homepage    = 'https://github.com/emjei/less_active_record'
 
   s.description = <<-EOF
     A simple active record mock working with text file (right now YAML)
