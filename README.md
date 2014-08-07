@@ -89,4 +89,5 @@ invalid_user.persisted? #=> false
 ## TODOs
 
  * Add XML and CSV support
+ * Make data file location configurable
  * Redo tests (use more mocks and stubs)
