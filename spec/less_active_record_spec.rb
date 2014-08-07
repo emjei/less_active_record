@@ -27,10 +27,10 @@ describe LessActiveRecord do
       end
     end
 
-    it 'adds accessor methods to instances' do
-      instance = klass.new
-      expect(instance).to respond_to(:new_attribute)
-      expect(instance).to respond_to(:new_attribute=)
+    it 'adds accessor methods to records' do
+      record = klass.new
+      expect(record).to respond_to(:new_attribute)
+      expect(record).to respond_to(:new_attribute=)
     end
 
     it 'adds a new attribute without duplicates' do
@@ -131,7 +131,7 @@ describe LessActiveRecord do
   end
 
   describe '#attributes=' do
-    let(:instance) { klass.new(attr_2: 'value') }
+    let(:record) { klass.new(attr_2: 'value') }
     let(:klass) do
       Class.new(LessActiveRecord) do
         attribute :attr_1
@@ -141,21 +141,21 @@ describe LessActiveRecord do
 
     it 'sets the specified attributes' do
       expect {
-        instance.attributes = { attr_1: 'value', attr_2: nil }
-      }.to change { instance.attributes }
+        record.attributes = { attr_1: 'value', attr_2: nil }
+      }.to change { record.attributes }
        .from(attr_1: nil, attr_2: 'value')
        .to(attr_1: 'value', attr_2: nil)
     end
 
     it 'does not set the unspecified ones' do
       expect {
-        instance.attributes = { attr_1: 'other_value' }
-      }.not_to change { instance.attr_2 }
+        record.attributes = { attr_1: 'other_value' }
+      }.not_to change { record.attr_2 }
     end
   end
 
   describe '#attributes' do
-    let(:instance) { klass.new(attr_2: 'value') }
+    let(:record) { klass.new(attr_2: 'value') }
     let(:klass) do
       Class.new(LessActiveRecord) do
         attribute :attr_1
@@ -164,12 +164,12 @@ describe LessActiveRecord do
     end
 
     it 'returns the attributes hash' do
-      expect(instance.attributes).to eq(attr_1: nil, attr_2: 'value')
+      expect(record.attributes).to eq(attr_1: nil, attr_2: 'value')
     end
   end
 
   describe '#valid?' do
-    let(:instance) { klass.new }
+    let(:record) { klass.new }
     let(:klass) do
       Class.new(LessActiveRecord) do
         validate :validation
@@ -177,79 +177,79 @@ describe LessActiveRecord do
     end
 
     it 'runs all specified validations' do
-      expect(instance).to receive(:validation).once.with no_args()
-      instance.valid?
+      expect(record).to receive(:validation).once.with no_args()
+      record.valid?
     end
 
     context 'when one of the validations return false' do
       before do
-        allow(instance).to receive(:validation).and_return false
+        allow(record).to receive(:validation).and_return false
       end
 
       it 'returns false' do
-        expect(instance.valid?).to be_falsy
+        expect(record.valid?).to be_falsy
       end
     end
 
     context 'when one of the validations throw an exception' do
       before do
-        allow(instance).to receive(:validation) { raise 'Error!' }
+        allow(record).to receive(:validation) { raise 'Error!' }
       end
 
       it 'returns false' do
-        expect(instance.valid?).to be_falsy
+        expect(record.valid?).to be_falsy
       end
     end
 
     context 'when all of the validations pass' do
       before do
-        allow(instance).to receive(:validation).and_return true
+        allow(record).to receive(:validation).and_return true
       end
 
       it 'returns true' do
-        expect(instance.valid?).to be_truthy
+        expect(record.valid?).to be_truthy
       end
     end
   end
 
   describe '#new_record?' do
     context 'when it is persisted' do
-      let(:instance) { Class.new(LessActiveRecord).create }
+      let(:record) { Class.new(LessActiveRecord).create }
 
       it 'returns false' do
-        expect(instance).not_to be_new_record
+        expect(record).not_to be_new_record
       end
     end
 
     context 'when it is not persisted' do
-      let(:instance) { Class.new(LessActiveRecord).new }
+      let(:record) { Class.new(LessActiveRecord).new }
 
       it 'returns true' do
-        expect(instance).to be_new_record
+        expect(record).to be_new_record
       end
     end
   end
 
   describe '#persisted?' do
     context 'when it is persisted' do
-      let(:instance) { Class.new(LessActiveRecord).create }
+      let(:record) { Class.new(LessActiveRecord).create }
 
       it 'returns true' do
-        expect(instance).to be_persisted
+        expect(record).to be_persisted
       end
     end
 
     context 'when it is not persisted' do
-      let(:instance) { Class.new(LessActiveRecord).new }
+      let(:record) { Class.new(LessActiveRecord).new }
 
       it 'returns false' do
-        expect(instance).not_to be_persisted
+        expect(record).not_to be_persisted
       end
     end
   end
 
   describe '#update' do
-    let(:instance) { klass.create(attr: '1') }
+    let(:record) { klass.create(attr: '1') }
     let(:klass) do
       Class.new(LessActiveRecord) do
         attribute :attr
@@ -258,13 +258,13 @@ describe LessActiveRecord do
 
     it 'sets the attributes' do
       expect {
-        instance.update(attr: '2')
-      }.to change(instance, :attr).from('1').to '2'
+        record.update(attr: '2')
+      }.to change(record, :attr).from('1').to '2'
     end
 
     it 'saves the changes' do
-      expect(instance).to receive(:save)
-      instance.update(attr: '2')
+      expect(record).to receive(:save)
+      record.update(attr: '2')
     end
   end
 
@@ -276,13 +276,13 @@ describe LessActiveRecord do
     end
 
     it 'sets the attributes' do
-      instance = klass.create(attr: '1')
-      expect(instance.attr).to eq '1'
+      record = klass.create(attr: '1')
+      expect(record.attr).to eq '1'
     end
 
-    it 'persists the object' do
-      instance = klass.create
-      expect(instance).to be_persisted
+    it 'persists the record' do
+      record = klass.create
+      expect(record).to be_persisted
     end
   end
 
@@ -293,62 +293,62 @@ describe LessActiveRecord do
       end
     end
 
-    context 'when the object is persisted' do
-      let!(:instance) { klass.create }
+    context 'when the record is persisted' do
+      let!(:record) { klass.create }
 
-      it 'destroys the object' do
-        expect { instance.destroy }.to change { klass.all.size }.by(-1)
+      it 'destroys the record' do
+        expect { record.destroy }.to change { klass.all.size }.by(-1)
       end
     end
 
-    context 'when the object is a new record' do
-      let!(:instance) { klass.new }
+    context 'when the record is a new' do
+      let!(:record) { klass.new }
 
       it 'does not change anything' do
-        expect { instance.destroy }.not_to change { klass.all.size }
+        expect { record.destroy }.not_to change { klass.all.size }
       end
     end
   end
 
   describe '#save' do
-    context 'when an object is valid' do
+    context 'when a record is valid' do
       let(:klass) do
         Class.new(LessActiveRecord) do
           attribute :attr
         end
       end
 
-      it 'returns true if the object is a new record' do
-        instance = klass.new
-        expect(instance.save).to be_truthy
+      it 'returns true if the record is a new' do
+        record = klass.new
+        expect(record.save).to be_truthy
       end
 
-      it 'persists the object if the object is a new record' do
-        instance = klass.new
-        expect { instance.save }.to change(instance, :persisted?).to true
+      it 'persists the record if the it is new' do
+        record = klass.new
+        expect { record.save }.to change(record, :persisted?).to true
       end
 
-      it 'assigns an id if the object is a new record' do
-        instance = klass.new
-        expect { instance.save }.to change { instance.id.nil? }.to false
+      it 'assigns an id if the record is new' do
+        record = klass.new
+        expect { record.save }.to change { record.id.nil? }.to false
       end
 
-      it 'updates the data if the object is already persisted' do
-        instance = klass.create(attr: '1')
+      it 'updates the data if the record is already persisted' do
+        record = klass.create(attr: '1')
         expect {
-          instance.attr = '2'
-          instance.save
-        }.to change { klass.find(instance.id).attr }.from('1').to '2'
+          record.attr = '2'
+          record.save
+        }.to change { klass.find(record.id).attr }.from('1').to '2'
       end
 
-      it 'returns true if the object is already persisted' do
-        instance = klass.create(attr: '1')
-        expect(instance.save).to be_truthy
+      it 'returns true if the record is already persisted' do
+        record = klass.create(attr: '1')
+        expect(record.save).to be_truthy
       end
     end
 
-    context 'when an object is invalid' do
-      let(:instance) { klass.new }
+    context 'when a record is invalid' do
+      let(:record) { klass.new }
       let(:klass) do
         Class.new(LessActiveRecord) do
           validate :validation
@@ -362,8 +362,23 @@ describe LessActiveRecord do
       end
 
       it 'returns false' do
-        expect(instance.save).to be_falsy
+        expect(record.save).to be_falsy
       end
+    end
+  end
+
+  describe '#==' do
+    let(:record) { klass.create }
+    let(:klass) { Class.new(LessActiveRecord) }
+
+    it 'returns true if records have the same id' do
+      same_record = klass.find(record.id)
+      expect(record).to eq same_record
+    end
+
+    it 'returns false if records have different ids' do
+      other_record = klass.create
+      expect(record).not_to eq other_record
     end
   end
 end

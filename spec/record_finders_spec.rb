@@ -12,38 +12,38 @@ describe RecordFinders do
   end
 
   describe '#all' do
-    it 'returns all objects' do
+    it 'returns all records' do
       expect(klass).to receive(:where).with({})
       klass.all
     end
   end
 
   describe '#find' do
-    let!(:instance) { klass.create(attr: '1') }
+    let!(:record) { klass.create(attr: '1') }
 
-    it 'finds the correct object' do
-      result = klass.find(instance.id)
-      expect(result.id).to eq instance.id
+    it 'finds the correct record' do
+      result = klass.find(record.id)
+      expect(result).to eq record
     end
 
-    it "throws an exception if the object can't be found" do
+    it "throws an exception if the record can't be found" do
       expect {
-        klass.find("#{ instance.id }-UNKNOWN")
+        klass.find("#{ record.id }-UNKNOWN")
       }.to raise_error('Record not found!')
     end
   end
 
   describe '#where' do
-    let!(:instance) { klass.create(attr: '1') }
+    let!(:record) { klass.create(attr: '1') }
 
-    it 'finds the correct object' do
-      result = klass.where(attr: '1')
-      expect([ instance.id ]).to eq result.map(&:id)
+    it 'finds the correct record' do
+      records = klass.where(attr: '1')
+      expect([record]).to eq records
     end
 
-    it 'returns all objects if given an empty hash' do
-      result = klass.where({})
-      expect([ instance.id ]).to eq result.map(&:id)
+    it 'returns all records if given an empty hash' do
+      records = klass.where({})
+      expect([record]).to eq records
     end
   end
 end

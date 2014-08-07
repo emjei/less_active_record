@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'less_active_record'
-  s.version     = '0.0.1'
+  s.version     = '0.1.0'
   s.date        = '2014-07-31'
   s.summary     = 'Simplified active record implementation.'
   s.license     = 'AFL-3.0'

@@ -111,6 +111,10 @@ class LessActiveRecord
     self.class.new(attributes).tap { |clone| clone.id = id }
   end
 
+  def ==(other)
+    id == other.id
+  end
+
   protected
 
   attr_writer :id
