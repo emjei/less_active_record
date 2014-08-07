@@ -58,7 +58,7 @@ valid_user_2.new_record? #=> true
 valid_user_2.save #=> true
 valid_user_2.new_record? #=> false
 
-# Retrieve all of records
+# Retrieve all records
 User.all #=> [#<User:0x90375c4 @first_name="Tom", @last_name="Sawyer", @id=1>, #<User:0x9037538 @first_name="Huckleberry", @last_name="Finn", @id=2>]
 
 # Find a user by id
@@ -76,7 +76,7 @@ valid_user_2.save #=> true
 valid_user_1.attributes #=> {:first_name=>"Johny", :last_name=>"Sawyer"}
 valid_user_2.attributes #=> {:first_name=>"Huckleberry", :last_name=>"Finney"}
 
-# Destroy the unneeded records
+# Destroy unneeded records
 valid_user_2.destroy #=> {:first_name=>"Huckleberry", :last_name=>"Finney", :id=>2}
 
 # Persist only valid objects
